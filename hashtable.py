@@ -1,20 +1,27 @@
 def hashtable_update(htable, key, value):
     bucket = hashtable_get_bucket(htable,key)
-    w = hashtable_lookup(htable,key)
+    w = return_pair(htable,key)
     if not w:
         bucket.append([key,[value]])
     else:
-        for e in w:
-            if e[0] == key:
-                e[1] = value
-    return htable
+        w[1] = value
 
 def hashtable_lookup(htable, keyword):
     bucket = hashtable_get_bucket(htable,keyword)
+    w = return_pair(htable,keyword)
+    if w:
+        return w[1]
+    return None
+
+
+def return_pair(htable,keyword):
     for e in bucket:
         if e[0] == keyword:
-            return e[1]
+            return e
     return None
+
+
+
 def hashtable_get_bucket(htable,keyword):
     size = len(htable)
     pos = hash_string(keyword,size)

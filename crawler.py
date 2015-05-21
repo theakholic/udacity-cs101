@@ -46,6 +46,7 @@ def get_all_links(page):
         else:
             break
     return urls
+
 def lookup(index,keyword):
     for e in index:
         if e[0] == keyword:

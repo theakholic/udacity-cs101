@@ -76,6 +76,26 @@ def popularity(t,p):
     for f in friends(p):
         score += popularity(t-1,p)
     return score
+
+def make_bricks(small, big, goal):
+    if big == 0:
+        return small >= goal
+    remaining = min((goal//5),big)
+    if small >= goal - 5*remaining:
+        return True
+    return False
+
+def make_chocolate(small, big, goal):
+    if big == 0:
+        if small < goal:
+            return -1
+    remaining = min(goal//5, big)
+    s = goal - remaining*5
+    if s <= small:
+        return s
+    return -1
+
+
 def test_list_binary_search_where():
     B = [0, 1, 2, 3, 4, 5, 6, 7,  8,  9, 10, 11, 12, 13, 14, 15]
     A = [1, 2, 3, 3, 3, 6, 8, 9, 13, 13, 14, 17, 21, 22, 23, 25]

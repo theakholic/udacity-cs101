@@ -94,6 +94,88 @@ def make_chocolate(small, big, goal):
     return -1
 
 
+def cross_product(p,q):
+    #[1,2,3]*[4,5] = [(1,4),(1,5),(2,4)
+    res = []
+    for e in p:
+        for f in q:
+            res.append((e,f))
+
+    return res
+
+def is_list(p):
+    return isinstance(p,list)
+
+def flatten(p):
+    result = []
+    if p == []:
+        return []
+    for e in p:
+        if is_list(e):
+            result+=flatten(e)
+        else:
+            result.append(e)
+    return result
+
+
+cache = []
+for i in range(40):
+    cache.append([-1]*40)
+    cache[i][1] = 1
+
+for i in range(40):
+    for j in range(40):
+        if i < j:
+            cache[i][j] = 0
+
+
+def stirling(n,k):
+    if cache[n][k] == -1:
+        cache[n][k] = k*stirling(n-1,k) + stirling(n-1,k-1)
+    return cache[n][k]
+
+
+
+print stirling(1,1)
+#>>> 1
+print stirling(2,1)
+#>>> 1
+print stirling(2,2)
+#>>> 1
+print stirling(2,3)
+#>>>0
+
+print stirling(3,1)
+#>>> 1
+print stirling(3,2)
+#>>> 3
+print stirling(3,3)
+#>>> 1
+print stirling(4,1)
+#>>> 1
+print stirling(4,2)
+#>>> 7
+print stirling(4,3)
+#>>> 6
+print stirling(4,4)
+#>>> 1
+
+print stirling(5,1)
+#>>> 1
+print stirling(5,2)
+#>>> 15
+print stirling(5,3)
+#>>> 25
+print stirling(5,4)
+#>>> 10
+print stirling(5,5)
+#>>> 1
+
+print stirling(20,15)
+#>>> 452329200
+
+
+
 def main():
     print(rec_median([1,2,3,5,7,8,9,10]))
     print(rec_RemDup([1,23,55,33,23,5,16, 1,1, 5, 33, 55, 16,24]))

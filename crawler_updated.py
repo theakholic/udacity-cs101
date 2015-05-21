@@ -1,4 +1,6 @@
 
+d = 0.8
+
 def get_page(url):
     """
     Return the content from the url as a string.
@@ -58,7 +60,7 @@ def add_to_index(index, keyword, url):
     Add the keyword to index.
     """
     #update the dict
-    if not lookup(index, keyword):
+    if keyword not in index:
         index[keyword] = [url]
     else:
         index[keyword].append(url)
@@ -100,8 +102,8 @@ def crawl_web(seed, max_depth = -1):
     to_crawl = [(seed,0)]
     tc = [seed]
     crawled = []
-    index = dict()
-
+    index = {}
+    graph = {}
     use_depth = True
     if max_depth == -1:
         use_depth = False
@@ -132,16 +134,84 @@ def crawl_web(seed, max_depth = -1):
 
             #5)add this page to the index
             add_page_to_index(index,current_url,content)
+            graph[current_url] = links
 
-    return index
+    return index,graph
 
 
+
+
+def compute_ranks(graph):
+    inlinks = {}
+
+    prev_ranks = {}
+    ranks = {}
+    num_pages = len(graph)
+
+    for key in graph:
+        inlinks [key] = []
+        prev_ranks = 1/num_pages
+
+    for key in graph:
+        for url in graph[key]:
+            inlinks[url].append(key)
+
+    time_step = 10
+    t = 0
+    while t <= time_step:
+        for url in graph:
+            res = 0.0
+            for link in inlinks[url]:
+                res = res + prev_ranks[link]/len(graph[link])
+            res = res*d
+
+            res = res + (1 - d)/num_pages
+            ranks[url] = res
+            prev_ranks = ranks
+        t += 1
+    return ranks
+
+def quick_sort(p):
+    if len(p) <= 1:
+        return p
+    splitter = p.pop(0)
+    lesser = [x for x in p if x[1] < splitter[1]]
+    greater = [x for x in p if x[1] >= splitter[1]]
+    return quick_sort(lesser)+[splitter]+quick_sort(greater)
+
+
+def ordered_search(index, ranks, keyword):
+    if keyword not in index:
+        return None
+    urls = index[keyword]
+    t = [(u, ranks[u]) for u in urls]
+    t = quick_sort(t)
+    return [u[0] for u in t]
+
+
+
+def best_lookup(index, keyword, ranks):
+    if keyword in index:
+        urls = index[keyword]
+        rank_stuff = []
+
+        for url in urls:
+            rank_stuff.append(ranks[url])
+
+        maximum = 0
+        for i in range(len(rank_stuff) - 1):
+            p = i+1
+            if rank_stuff[p] > rank_stuff[maximum]:
+                maximum = p
+        return urls[minimum]
+    else:
+        return None
 
 def main():
-    l1 = crawl_web('https://www.udacity.com/cs101x/index.html')
+    l1,g1 = crawl_web('https://www.udacity.com/cs101x/index.html')
     print l1
 
-    l2 = crawl_web('https://www.udacity.com/cs101x/index.html',0)
+    l2,g2 = crawl_web('https://www.udacity.com/cs101x/index.html',0)
     print l2
 
     print len(l1)
